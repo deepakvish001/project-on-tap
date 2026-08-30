@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AirfareIndexRouteImport } from './routes/airfare-index'
+import { Route as LeadTimeRouteImport } from './routes/lead-time'
 import { Route as RouteAnalyticsRouteImport } from './routes/route-analytics'
 import { Route as TrendsRouteImport } from './routes/trends'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AirfareIndexRoute = AirfareIndexRouteImport.update({
   id: '/airfare-index',
   path: '/airfare-index',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeadTimeRoute = LeadTimeRouteImport.update({
+  id: '/lead-time',
+  path: '/lead-time',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RouteAnalyticsRoute = RouteAnalyticsRouteImport.update({
@@ -38,12 +44,14 @@ const TrendsRoute = TrendsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/airfare-index': typeof AirfareIndexRoute
+  '/lead-time': typeof LeadTimeRoute
   '/route-analytics': typeof RouteAnalyticsRoute
   '/trends': typeof TrendsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/airfare-index': typeof AirfareIndexRoute
+  '/lead-time': typeof LeadTimeRoute
   '/route-analytics': typeof RouteAnalyticsRoute
   '/trends': typeof TrendsRoute
 }
@@ -51,20 +59,29 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/airfare-index': typeof AirfareIndexRoute
+  '/lead-time': typeof LeadTimeRoute
   '/route-analytics': typeof RouteAnalyticsRoute
   '/trends': typeof TrendsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/airfare-index' | '/route-analytics' | '/trends'
+  fullPaths:
+    '/' | '/airfare-index' | '/lead-time' | '/route-analytics' | '/trends'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/airfare-index' | '/route-analytics' | '/trends'
-  id: '__root__' | '/' | '/airfare-index' | '/route-analytics' | '/trends'
+  to: '/' | '/airfare-index' | '/lead-time' | '/route-analytics' | '/trends'
+  id:
+    | '__root__'
+    | '/'
+    | '/airfare-index'
+    | '/lead-time'
+    | '/route-analytics'
+    | '/trends'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AirfareIndexRoute: typeof AirfareIndexRoute
+  LeadTimeRoute: typeof LeadTimeRoute
   RouteAnalyticsRoute: typeof RouteAnalyticsRoute
   TrendsRoute: typeof TrendsRoute
 }
@@ -83,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/airfare-index'
       fullPath: '/airfare-index'
       preLoaderRoute: typeof AirfareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lead-time': {
+      id: '/lead-time'
+      path: '/lead-time'
+      fullPath: '/lead-time'
+      preLoaderRoute: typeof LeadTimeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/route-analytics': {
@@ -105,6 +129,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AirfareIndexRoute: AirfareIndexRoute,
+  LeadTimeRoute: LeadTimeRoute,
   RouteAnalyticsRoute: RouteAnalyticsRoute,
   TrendsRoute: TrendsRoute,
 }
