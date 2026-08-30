@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AirfareIndexRouteImport } from './routes/airfare-index'
+import { Route as RouteAnalyticsRouteImport } from './routes/route-analytics'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const AirfareIndexRoute = AirfareIndexRouteImport.update({
   path: '/airfare-index',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RouteAnalyticsRoute = RouteAnalyticsRouteImport.update({
+  id: '/route-analytics',
+  path: '/route-analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/airfare-index': typeof AirfareIndexRoute
+  '/route-analytics': typeof RouteAnalyticsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/airfare-index': typeof AirfareIndexRoute
+  '/route-analytics': typeof RouteAnalyticsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/airfare-index': typeof AirfareIndexRoute
+  '/route-analytics': typeof RouteAnalyticsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/airfare-index'
+  fullPaths: '/' | '/airfare-index' | '/route-analytics'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/airfare-index'
-  id: '__root__' | '/' | '/airfare-index'
+  to: '/' | '/airfare-index' | '/route-analytics'
+  id: '__root__' | '/' | '/airfare-index' | '/route-analytics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AirfareIndexRoute: typeof AirfareIndexRoute
+  RouteAnalyticsRoute: typeof RouteAnalyticsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AirfareIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/route-analytics': {
+      id: '/route-analytics'
+      path: '/route-analytics'
+      fullPath: '/route-analytics'
+      preLoaderRoute: typeof RouteAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AirfareIndexRoute: AirfareIndexRoute,
+  RouteAnalyticsRoute: RouteAnalyticsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
