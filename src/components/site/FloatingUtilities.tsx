@@ -5,7 +5,9 @@ const EXAMPLE_QUESTIONS = [
   "How has airfare changed in the last 30 days?",
   "Which route recorded the highest increase?",
   "What does an APIx value of 108 mean?",
+  "How is APIx calculated?",
 ];
+
 
 export function FloatingUtilities() {
   const [open, setOpen] = useState(false);

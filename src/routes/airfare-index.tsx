@@ -119,7 +119,7 @@ function AirfareIndexPage() {
   const summary = [
     { label: "Daily Change", value: ((latest - dayAgo) / dayAgo) * 100, delta: true },
     { label: "7-Day Change", value: ((latest - weekAgo) / weekAgo) * 100, delta: true },
-    { label: "Monthly Change", value: ((latest - monthAgo) / monthAgo) * 100, delta: true },
+    { label: "30-Day Change", value: ((latest - monthAgo) / monthAgo) * 100, delta: true },
   ];
 
   const rows = useMemo(() => routeTable(airlineCode), [airlineCode]);
@@ -200,15 +200,20 @@ function AirfareIndexPage() {
               </span>
             </div>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
-              Tracking movements in domestic airfare prices across India
+              Monitoring movements in domestic airfare prices across India
+            </p>
+            <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+              APIx tracks changes in observed domestic airfare prices relative to a defined base
+              period.
             </p>
 
-            <dl className="mt-6 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            <dl className="mt-6 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
               {[
-                { term: "Latest data date", value: formatDate(LATEST_DATE) },
-                { term: "Data status", value: "Available · Updated" },
                 { term: "Base period", value: BASE_PERIOD },
-                { term: "Base index", value: "100.00" },
+                { term: "Base index", value: "100" },
+                { term: "Latest observation", value: formatDate(LATEST_DATE) },
+                { term: "Data coverage", value: `${ROUTES.length - 1} routes · ${AIRLINES.length - 1} airlines` },
+                { term: "Last updated", value: `${formatDate(LATEST_DATE)}, 06:00 IST` },
               ].map((item) => (
                 <div key={item.term} className="bg-background px-4 py-3">
                   <dt className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
@@ -218,6 +223,7 @@ function AirfareIndexPage() {
                 </div>
               ))}
             </dl>
+
           </div>
         </section>
 
@@ -229,8 +235,9 @@ function AirfareIndexPage() {
           <div className="grid gap-8 border-b border-border pb-8 lg:grid-cols-[minmax(0,20rem)_1fr] lg:items-end">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                APIx — National
+                Current APIx
               </p>
+
               <p className="mt-2 font-serif text-5xl font-bold tabular-nums text-foreground">
                 {latest.toFixed(2)}
               </p>
@@ -512,16 +519,23 @@ function AirfareIndexPage() {
               <caption className="sr-only">Route-wise airfare index movement</caption>
               <thead className="bg-surface">
                 <tr>
+                  <th
+                    scope="col"
+                    className="border-b border-border px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground"
+                  >
+                    Rank
+                  </th>
                   {(
                     [
                       ["route", "Route", "left"],
-                      ["index", "Current Index", "right"],
-                      ["change", "Change %", "right"],
                       ["avgFare", "Average Fare", "right"],
+                      ["index", "Route Index", "right"],
+                      ["change", "Change %", "right"],
                       ["weight", "DGCA Weight", "right"],
                       ["observations", "Observations", "right"],
                     ] as [keyof RouteRow, string, string][]
                   ).map(([key, label, align]) => (
+
                     <th
                       key={key}
                       scope="col"
@@ -549,19 +563,22 @@ function AirfareIndexPage() {
                 </tr>
               </thead>
               <tbody>
-                {pagedRows.map((row) => (
+                {pagedRows.map((row, i) => (
                   <tr key={row.route} className="border-b border-border last:border-b-0">
+                    <td className="px-4 py-2.5 tabular-nums text-muted-foreground">
+                      {currentPage * PAGE_SIZE + i + 1}
+                    </td>
                     <th scope="row" className="px-4 py-2.5 text-left font-medium text-foreground">
                       {row.route}
                     </th>
+                    <td className="px-4 py-2.5 text-right tabular-nums text-foreground">
+                      ₹{row.avgFare.toLocaleString("en-IN")}
+                    </td>
                     <td className="px-4 py-2.5 text-right tabular-nums text-foreground">
                       {row.index.toFixed(1)}
                     </td>
                     <td className="px-4 py-2.5 text-right tabular-nums text-foreground">
                       <Delta value={row.change} className="justify-end" />
-                    </td>
-                    <td className="px-4 py-2.5 text-right tabular-nums text-foreground">
-                      ₹{row.avgFare.toLocaleString("en-IN")}
                     </td>
                     <td className="px-4 py-2.5 text-right tabular-nums text-muted-foreground">
                       {row.weight.toFixed(1)}%
@@ -573,11 +590,12 @@ function AirfareIndexPage() {
                 ))}
                 {pagedRows.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-6 text-center text-muted-foreground">
+                    <td colSpan={7} className="px-4 py-6 text-center text-muted-foreground">
                       No routes match your search.
                     </td>
                   </tr>
                 ) : null}
+
               </tbody>
             </table>
           </div>
@@ -620,14 +638,15 @@ function AirfareIndexPage() {
         {/* Recent price movement */}
         <section className="container-gov pb-8" aria-labelledby="movement-heading">
           <h2 id="movement-heading" className="text-lg font-semibold text-foreground">
-            Recent Price Movement
+            Recent Airfare Movement
           </h2>
           <div className="mt-4 grid gap-px overflow-hidden rounded-sm border border-border bg-border md:grid-cols-3">
             {[
-              { label: "Highest increase", row: movement.top },
-              { label: "Highest decrease", row: movement.bottom },
-              { label: "Most stable route", row: movement.stable },
+              { label: "Highest Increase", row: movement.top },
+              { label: "Highest Decrease", row: movement.bottom },
+              { label: "Most Stable Route", row: movement.stable },
             ].map((item) => (
+
               <div key={item.label} className="bg-background px-4 py-4">
                 <p className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
                   {item.label}
@@ -691,27 +710,23 @@ function AirfareIndexPage() {
         <section className="container-gov pb-12">
           <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
             <div className="rounded-sm border border-border bg-card p-4 md:p-6">
-              <h2 className="text-lg font-semibold text-foreground">How is APIx calculated?</h2>
-              <ol className="mt-4 space-y-1 text-sm">
+              <h2 className="text-lg font-semibold text-foreground">How APIx is calculated</h2>
+              <ol className="mt-4 grid gap-3 sm:grid-cols-2">
                 {[
-                  "Airfare observations",
-                  "Data cleaning",
-                  "Route-level price indices",
-                  "DGCA passenger-based weights",
-                  "National Airfare Price Index",
-                ].map((step, i, all) => (
-                  <li key={step}>
-                    <span className="block rounded-sm border border-border bg-surface px-3 py-2 text-foreground">
-                      {step}
-                    </span>
-                    {i < all.length - 1 ? (
-                      <span
-                        className="block py-1 text-center text-muted-foreground"
-                        aria-hidden="true"
-                      >
-                        ↓
-                      </span>
-                    ) : null}
+                  ["01", "Collect", "Airfare observations"],
+                  ["02", "Clean", "Validate and standardise data"],
+                  ["03", "Weight", "Apply route importance using passenger traffic"],
+                  ["04", "Calculate", "Generate the Airfare Price Index"],
+                ].map(([num, title, detail]) => (
+                  <li
+                    key={num}
+                    className="rounded-sm border border-border bg-surface px-4 py-3"
+                  >
+                    <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+                      {num}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{title}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{detail}</p>
                   </li>
                 ))}
               </ol>
@@ -719,9 +734,10 @@ function AirfareIndexPage() {
                 href="/methodology"
                 className="mt-4 inline-flex items-center gap-1 rounded-sm border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-accent"
               >
-                View Methodology
+                View Full Methodology
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </a>
+
             </div>
 
             <div className="rounded-sm border border-border bg-surface p-4">
