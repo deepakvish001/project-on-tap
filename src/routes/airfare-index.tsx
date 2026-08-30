@@ -106,15 +106,15 @@ function AirfareIndexPage() {
     const points = aggregate(windowed, frequency);
     return points.map((point, i) => ({
       ...point,
-      prevChange: i === 0 ? 0 : ((point.index - points[i - 1].index) / points[i - 1].index) * 100,
+      prevChange: i === 0 ? 0 : ((point.index - points[i - 1]!.index) / points[i - 1]!.index) * 100,
       baseChange: point.index - 100,
     }));
   }, [daily, days, frequency]);
 
-  const latest = daily[daily.length - 1].index;
-  const dayAgo = daily[daily.length - 2].index;
-  const weekAgo = daily[daily.length - 8].index;
-  const monthAgo = daily[daily.length - 31].index;
+  const latest = daily[daily.length - 1]!.index;
+  const dayAgo = daily[daily.length - 2]!.index;
+  const weekAgo = daily[daily.length - 8]!.index;
+  const monthAgo = daily[daily.length - 31]!.index;
 
   const summary = [
     { label: "Daily Change", value: ((latest - dayAgo) / dayAgo) * 100, delta: true },
@@ -148,8 +148,8 @@ function AirfareIndexPage() {
 
   const movement = useMemo(() => {
     const byChange = [...rows].sort((a, b) => b.change - a.change);
-    const stable = [...rows].sort((a, b) => Math.abs(a.change) - Math.abs(b.change))[0];
-    return { top: byChange[0], bottom: byChange[byChange.length - 1], stable };
+    const stable = [...rows].sort((a, b) => Math.abs(a.change) - Math.abs(b.change))[0]!;
+    return { top: byChange[0]!, bottom: byChange[byChange.length - 1]!, stable };
   }, [rows]);
 
   function toggleSort(key: keyof RouteRow) {
@@ -772,7 +772,7 @@ function ChartTooltip({
   payload?: TooltipPayload[];
 }) {
   if (!active || !payload?.length) return null;
-  const point = payload[0].payload;
+  const point = payload[0]!.payload;
   return (
     <div className="rounded-sm border border-border bg-card p-3 text-xs shadow-raised">
       <p className="font-semibold text-foreground">{formatDate(point.date)}</p>

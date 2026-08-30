@@ -50,8 +50,8 @@ export type Point = { date: string; index: number };
 
 /** Daily index series ending at LATEST_DATE. */
 export function buildSeries(routeCode: string, airlineCode: string, days: number): Point[] {
-  const route = ROUTES.find((r) => r.code === routeCode) ?? ROUTES[0];
-  const airline = AIRLINES.find((a) => a.code === airlineCode) ?? AIRLINES[0];
+  const route = ROUTES.find((r) => r.code === routeCode) ?? ROUTES[0]!;
+  const airline = AIRLINES.find((a) => a.code === airlineCode) ?? AIRLINES[0]!;
   const end = new Date(`${LATEST_DATE}T00:00:00Z`);
   const seed = route.code.length * 7 + airline.code.length * 3;
   const points: Point[] = [];
@@ -104,7 +104,7 @@ export type RouteRow = {
 };
 
 export function routeTable(airlineCode: string): RouteRow[] {
-  const airline = AIRLINES.find((a) => a.code === airlineCode) ?? AIRLINES[0];
+  const airline = AIRLINES.find((a) => a.code === airlineCode) ?? AIRLINES[0]!;
   return ROUTES.filter((r) => r.code !== "ALL").map((r, i) => {
     const index = Math.round(r.base * airline.factor * 100) / 100;
     return {
