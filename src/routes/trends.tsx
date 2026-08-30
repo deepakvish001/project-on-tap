@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Bar,
@@ -99,7 +99,7 @@ function Delta({ value }: { value: number }) {
   );
 }
 
-function Tag({ children }: { children: string }) {
+function Tag({ children }: { children: ReactNode }) {
   return (
     <span className="rounded-sm border border-border bg-surface px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
       {children}
@@ -589,7 +589,7 @@ function PriceTrendsPage() {
                         type="monotone"
                         dataKey={code}
                         stroke="currentColor"
-                        className={airlineColors[i % airlineColors.length]}
+                        className={airlineColors[i % airlineColors.length] ?? "text-primary"}
                         strokeWidth={1.8}
                         strokeDasharray={i === 1 ? "5 3" : i === 3 ? "2 3" : undefined}
                         dot={false}
