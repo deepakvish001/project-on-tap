@@ -31,6 +31,7 @@ const NAV_ITEMS = [
   { label: "Explore Data", href: "/explore-data" },
   { label: "Route Analytics", href: "/route-analytics" },
   { label: "Trends", href: "/trends" },
+  { label: "Lead-Time", href: "/lead-time" },
   { label: "Backtesting", href: "/backtesting" },
   { label: "CPI Benchmark", href: "/cpi-benchmark" },
   { label: "Data Sources", href: "/data-sources" },
